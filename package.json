@@ -1,0 +1,19 @@
+{
+  "name": "url-shortener",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/friso-the-coding-guy/url-shortener.git"
+  },
+  "author": "Friso the Coding Guy",
+  "bugs": {
+    "url": "https://github.com/friso-the-coding-guy/url-shortener/issues"
+  },
+  "homepage": "https://github.com/friso-the-coding-guy/url-shortener#readme"
+}

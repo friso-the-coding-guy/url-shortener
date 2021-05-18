@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/friso-the-coding-guy/url-shortener/issues"
   },
-  "homepage": "https://github.com/friso-the-coding-guy/url-shortener#readme"
+  "homepage": "https://github.com/friso-the-coding-guy/url-shortener#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }

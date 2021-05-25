@@ -2,12 +2,13 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
-const MongoClient = require('mongodb').MongoClient;
-const ObjectId = require('mongodb').ObjectId;
-const mongoUri = 'mongodb://localhost:27017';
-const urlCollection = 'url-shortener';
+const MONGOCLIENT = require('mongodb').MongoClient;
+const OBJECTID = require('mongodb').ObjectId;
+const MONGOURI = 'mongodb://localhost:27017';
+const URLDATABASE = 'url-shortener';
+const URLCOLLECTION = 'urls';
 
-const client = new MongoClient(mongoUri, {
+const mongoClient = new MONGOCLIENT(MONGOURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     
@@ -15,56 +16,55 @@ const client = new MongoClient(mongoUri, {
 
 app.use(express.json());
 
-app.post('/', async (request, response) => {
+app.post('/', (request, response) => {
     const body = request.body;
     console.log(body);
 
-    try {
-        //connect to db
-        await client.connect();
-        const db = client.db();
-        const urls = db.collection(urlCollection);
-    
-        // put in the data
-        const result = await urls.insertOne(body)
-        console.log(result);
+    mongoClient.connect(async (error, client) => {
+        if (error) {
+            console.error(error);
+            response.status(400).send(error);
+        }
 
-        // return the saved object
-        response.send({
-            id: result.ops
+        const db = client.db(URLDATABASE);
+        const urls = db.collection(URLCOLLECTION);
+
+        // put in the data
+        urls.insertOne(body, (error, result) => {
+            if (error) {
+                console.error(error);
+                response.status(400).send(error);
+            }
+
+            response.send({
+                id: result.ops
+            });
         });
-    } catch (error) {
-        console.error(error);
-        response.status(400).send(error);
-    } finally {
-        client.close();
-    }
+    });
 });
 
-app.get('/:id', async (request, response) => {
+app.get('/:id', (request, response) => {
     const id = request.params.id;
 
-    try{
-        //connect to db
-        await client.connect();
-        const db = client.db();
-        const urls = db.collection(urlCollection);
+    mongoClient.connect((error, client) => {
+        if (error) {
+            console.error(error);
+            response.status(400).send(error);
+        }
+
+        const db = client.db(URLDATABASE);
+        const urls = db.collection(URLCOLLECTION);
 
         //find saved 
-        const result = await urls.findOne({ _id: ObjectId(id)});
+        urls.findOne({ _id: OBJECTID(id)}, (error, result) => {
+            if (error) {
+                console.error(error);
+                response.status(400).send(error);
+            }
 
-        urls.listIndexes();
-        console.log(result);
-
-        //return saved
-        response.send(result);
-
-    } catch (error) {
-        console.error(error);
-        response.send(error);
-    } finally {
-        client.close();
-    }
+            response.send(result);
+        });
+    });
 });
 
 app.listen(port, () => {

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='styles/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+
+    <form id="url-form">
+        Full URL:<br>
+        <input type="text" name="url" placeholder="http://www.example.com/"><br>
+        Shortened URL:<br>
+        <input type="text" name="shortUri" placeholder="xmpl"><br><br>
+        <input id="url-form-button" type="submit" value="Submit">
+    </form>
+
+    <div id="url-response"></div>
+
+    <script src='https://code.jquery.com/jquery-3.6.0.min.js'></script>
+    <script src='scripts/post-url.js'></script>
+  </body>
+</html>

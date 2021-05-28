@@ -1,3 +1,4 @@
+'url-strict';
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -7,6 +8,13 @@ const OBJECTID = require('mongodb').ObjectId;
 const MONGOURI = 'mongodb://localhost:27017';
 const URLDATABASE = 'url-shortener';
 const URLCOLLECTION = 'urls';
+
+
+const path = require('path');
+
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+app.use(express.static(path.resolve('assets')));
 
 const mongoClient = new MONGOCLIENT(MONGOURI, {
     useNewUrlParser: true,
@@ -93,6 +101,10 @@ app.get('/:uri', (request, response) => {
             response.redirect(result.url);
         });
     });
+});
+
+app.get('/', (request, response) => {
+    response.render('index', {title: 'URL shortener'});
 });
 
 app.listen(port, () => {

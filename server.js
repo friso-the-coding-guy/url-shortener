@@ -16,14 +16,14 @@ const mongoClient = new MONGOCLIENT(MONGOURI, {
 
 app.use(express.json());
 
-app.post('/', (request, response) => {
+app.post('/api/url', (request, response) => {
     const body = request.body;
-    console.log(body);
 
     mongoClient.connect(async (error, client) => {
         if (error) {
             console.error(error);
             response.status(400).send(error);
+            return;
         }
 
         const db = client.db(URLDATABASE);
@@ -34,6 +34,7 @@ app.post('/', (request, response) => {
             if (error) {
                 console.error(error);
                 response.status(400).send(error);
+                return;
             }
 
             response.send({
@@ -43,26 +44,53 @@ app.post('/', (request, response) => {
     });
 });
 
-app.get('/:id', (request, response) => {
-    const id = request.params.id;
+app.get('/api/url/:uri', (request, response) => {
+    const uri = request.params.uri;
 
     mongoClient.connect((error, client) => {
         if (error) {
             console.error(error);
             response.status(400).send(error);
+            return;
         }
 
         const db = client.db(URLDATABASE);
         const urls = db.collection(URLCOLLECTION);
 
         //find saved 
-        urls.findOne({ _id: OBJECTID(id)}, (error, result) => {
+        urls.findOne({'$or' : [{'_id': OBJECTID.isValid(uri) ? OBJECTID(uri) : undefined}, {'shortUri': uri}]}, (error, result) => {
             if (error) {
                 console.error(error);
                 response.status(400).send(error);
+                return;
             }
 
             response.send(result);
+        });
+    });
+});
+
+app.get('/:uri', (request, response) => {
+    const uri = request.params.uri;
+
+    mongoClient.connect((error, client) => {
+        if (error) {
+            console.error(error);
+            response.status(400).send(error);
+            return;
+        }
+
+        const db = client.db(URLDATABASE);
+        const urls = db.collection(URLCOLLECTION);
+
+        urls.findOne({'$or' : [{'_id': OBJECTID.isValid(uri) ? OBJECTID(uri) : undefined}, {'shortUri': uri}]}, (error, result) => {
+            if (error) {
+                console.error(error);
+                response.status(400).send(error);
+                return;
+            }
+
+            response.redirect(result.url);
         });
     });
 });
